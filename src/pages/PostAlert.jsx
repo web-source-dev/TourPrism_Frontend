@@ -24,10 +24,11 @@ const PostAlert = () => {
   const navigate = useNavigate();
 
   const incidentTypes = [
-    'Suspicious Activity',
-    'Violent Incident',
-    'Traffic Hazard/Accident',
-    'Natural Disaster',
+    'Scam',
+    'Theft',
+    'Crime',
+    'Weather',
+    'Public Disorder',
     'Other'
   ];
   console.log("formData",formData)

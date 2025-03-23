@@ -22,6 +22,7 @@ import {
   DialogActions,
   DialogContentText
 } from "@mui/material";
+import FilterDrawer from "../components/FilterDrawer";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -40,8 +41,14 @@ const Feed = () => {
   const [showLocationMessage, setShowLocationMessage] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [locationAccuracy, setLocationAccuracy] = useState(null);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    sortBy: 'relevant',
+    incidentTypes: [],
+    timeRange: 0
+  });
 
-  // Fetch alerts based on current location settings
+  // Fetch alerts based on current location settings and filters
   const fetchLocationAlerts = async (city = "Edinburgh", coords = null) => {
     try {
       setLoading(true);
@@ -49,11 +56,13 @@ const Feed = () => {
       
       console.log("Fetching alerts with params:", { city, coords });
       
-      // Fetch alerts with location parameters
+      // Fetch alerts with location parameters and filters
       const response = await fetchAlerts({
         city: city || undefined,  // Only pass city if it has a value
         latitude: coords?.latitude,
-        longitude: coords?.longitude
+        longitude: coords?.longitude,
+        sortBy: filters.sortBy,
+        incidentTypes: filters.incidentTypes
       });
       
       console.log("API Response:", response);
@@ -65,16 +74,48 @@ const Feed = () => {
       
       console.log("Extracted alerts data:", alertsData);
       
-      // Filter alerts that are approved (this should be already done by the backend,
-      // but we'll add a safety check here)
-      const approvedAlerts = alertsData.filter(alert => alert.status === "approved" || !alert.status);
+      // Filter alerts based on incident types, time range, and status
+      let filteredAlerts = alertsData.filter(alert => alert.status === "approved" || !alert.status);
+
+      // Apply time range filter if set
+      if (filters.timeRange > 0) {
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - filters.timeRange);
+        filteredAlerts = filteredAlerts.filter(alert => new Date(alert.createdAt) >= cutoffDate);
+      }
       
-      console.log("Approved alerts:", approvedAlerts);
+      if (filters.incidentTypes.length > 0) {
+        filteredAlerts = filteredAlerts.filter(alert =>
+          filters.incidentTypes.includes(alert.incidentType)
+        );
+      }
+
+      // Sort alerts based on selected option
+      filteredAlerts.sort((a, b) => {
+        switch (filters.sortBy) {
+          case 'relevant':
+            return (b.likes || 0) - (a.likes || 0);
+          case 'reported':
+            return (b.flaggedBy?.length || 0) - (a.flaggedBy?.length || 0);
+          case 'newest':
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const aIsRecent = new Date(a.createdAt) > twentyFourHoursAgo;
+            const bIsRecent = new Date(b.createdAt) > twentyFourHoursAgo;
+            if (aIsRecent !== bIsRecent) return bIsRecent ? 1 : -1;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          case 'oldest':
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          default:
+            return 0;
+        }
+      });
       
-      setAlerts(approvedAlerts);
-      setResultsCount(approvedAlerts.length);
+      console.log("Filtered alerts:", filteredAlerts);
       
-      if (approvedAlerts.length === 0) {
+      setAlerts(filteredAlerts);
+      setResultsCount(filteredAlerts.length);
+      
+      if (filteredAlerts.length === 0) {
         setLocationMessage(`No alerts found${coords ? " for your current location" : " in Edinburgh"}`);
         setShowLocationMessage(true);
       }
@@ -256,7 +297,11 @@ const Feed = () => {
           <Typography variant="body2" color="text.secondary">
             Showing {resultsCount} results
           </Typography>
-          <IconButton size="small" sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <IconButton 
+            size="small" 
+            sx={{ border: '1px solid', borderColor: 'divider' }}
+            onClick={() => setFilterDrawerOpen(true)}
+          >
             <MenuIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -363,8 +408,27 @@ const Feed = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <FilterDrawer
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        filters={filters}
+        onFilterChange={setFilters}
+        resultCount={resultsCount}
+        onApplyFilters={() => {
+          setFilterDrawerOpen(false);
+          fetchLocationAlerts(location, locationCoords);
+        }}
+        onClearFilters={() => {
+          setFilters({
+            sortBy: 'relevant',
+            incidentTypes: []
+          });
+          fetchLocationAlerts(location, locationCoords);
+        }}
+      />
     </Container>
   );
 };
 
-export default Feed; 
+export default Feed;
