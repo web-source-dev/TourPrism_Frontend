@@ -45,7 +45,8 @@ const Feed = () => {
   const [filters, setFilters] = useState({
     sortBy: 'relevant',
     incidentTypes: [],
-    timeRange: 0
+    timeRange: 0,
+    distance: 0
   });
 
   // Fetch alerts based on current location settings and filters
@@ -74,7 +75,7 @@ const Feed = () => {
       
       console.log("Extracted alerts data:", alertsData);
       
-      // Filter alerts based on incident types, time range, and status
+      // Filter alerts based on incident types, time range, distance, and status
       let filteredAlerts = alertsData.filter(alert => alert.status === "approved" || !alert.status);
 
       // Apply time range filter if set
@@ -82,6 +83,29 @@ const Feed = () => {
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - filters.timeRange);
         filteredAlerts = filteredAlerts.filter(alert => new Date(alert.createdAt) >= cutoffDate);
+      }
+      
+      // Apply distance filter if set and we have user coordinates
+      if (filters.distance > 0 && coords) {
+        filteredAlerts = filteredAlerts.filter(alert => {
+          if (!alert.latitude || !alert.longitude) return false;
+          
+          // Calculate distance using Haversine formula
+          const R = 6371; // Earth's radius in kilometers
+          const lat1 = coords.latitude * Math.PI / 180;
+          const lat2 = alert.latitude * Math.PI / 180;
+          const dLat = (alert.latitude - coords.latitude) * Math.PI / 180;
+          const dLon = (alert.longitude - coords.longitude) * Math.PI / 180;
+          
+          const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1) * Math.cos(lat2) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+          
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+          const distance = R * c; // Distance in kilometers
+          
+          return distance <= filters.distance;
+        });
       }
       
       if (filters.incidentTypes.length > 0) {

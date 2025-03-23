@@ -44,6 +44,13 @@ const FilterDrawer = ({
       timeRange: newValue
     });
   };
+
+  const handleDistanceChange = (event, newValue) => {
+    onFilterChange({
+      ...filters,
+      distance: newValue
+    });
+  };
   const handleSortChange = (event) => {
     onFilterChange({
       ...filters,
@@ -98,6 +105,29 @@ const FilterDrawer = ({
               ]}
               valueLabelDisplay="auto"
               valueLabelFormat={getTimeRangeLabel}
+            />
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            Distance (km)
+          </Typography>
+          <Box sx={{ px: 1 }}>
+            <Slider
+              value={filters.distance || 0}
+              onChange={handleDistanceChange}
+              min={0}
+              max={50}
+              step={1}
+              marks={[
+                { value: 0, label: '0' },
+                { value: 50, label: '50km' }
+              ]}
+              valueLabelDisplay="auto"
+              valueLabelFormat={(value) => `${value}km`}
             />
           </Box>
         </Box>
