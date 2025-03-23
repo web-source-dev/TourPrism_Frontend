@@ -19,7 +19,7 @@ const GoogleCallback = () => {
     if (token) {
       handleGoogleCallback(token)
         .then(() => {
-          navigate('/');
+          navigate('/feed');
         })
         .catch((error) => {
           console.error('Google callback error:', error);
