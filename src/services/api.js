@@ -241,3 +241,24 @@ export const fetchAlerts = async (params = {}) => {
     };
   }
 };
+
+export const getNotifications = async () => {
+  const response = await axios.get('/api/notifications', {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+  return response.data;
+};
+
+export const markAsRead = async (notificationId) => {
+  const response = await axios.patch(`/api/notifications/${notificationId}/read`, {}, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+  return response.data;
+};
+
+export const deleteNotification = async (notificationId) => {
+  const response = await axios.delete(`/api/notifications/${notificationId}`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+  return response.data;
+};

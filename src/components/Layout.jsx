@@ -3,7 +3,7 @@ import { Box, AppBar, Toolbar, Typography, Container, Drawer, IconButton, List, 
 import { Link } from 'react-router-dom';
 import { logout } from '../services/api';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, isFooter = true }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: Replace with actual auth state
 
@@ -21,6 +21,7 @@ const Layout = ({ children }) => {
     { text: 'My Alerts', icon: 'ri-notification-line', path: '/my-alerts' },
     { text: 'Insights', icon: 'ri-line-chart-line', path: '/insights' },
     { text: 'Rewards', icon: 'ri-gift-line', path: '/rewards' },
+    { text: 'Notifications', icon: 'ri-notification-line', path: '/notifications' },
     { text: 'Subscription', icon: 'ri-vip-crown-line', path: '/subscription' },
     { text: 'Settings', icon: 'ri-settings-line', path: '/settings' },
     { text: 'Logout', icon: 'ri-logout-box-line', path: '/' }
@@ -69,7 +70,7 @@ const Layout = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', p:0,m:0}}>
       <AppBar position="static" sx={{ bgcolor: 'white', boxShadow: 1 }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{display: 'flex', gap:1}}>
@@ -164,20 +165,21 @@ const Layout = ({ children }) => {
         {drawer}
       </Drawer>
 
-      <Container component="main" sx={{ flex: 1, py: 4 }}>
+      <Container component="main" sx={{ flex: 1, py: 4 ,px:0 }}>
         {children}
       </Container>
 
-      <Box
-        component="footer"
-        sx={{
-          py: 3,
-          px: 2,
-          mt: 'auto',
-          bgcolor: 'white',
-          borderTop: '1px solid #e0e0e0'
-        }}
-      >
+      {isFooter && (
+        <Box
+          component="footer"
+          sx={{
+            py: 3,
+            px: 2,
+            mt: 'auto',
+            bgcolor: 'white',
+            borderTop: '1px solid #e0e0e0'
+          }}
+        >
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'flex-start' }, gap: 3 }}>
 
@@ -228,6 +230,7 @@ const Layout = ({ children }) => {
             </Box>
         </Container>
       </Box>
+    )}
     </Box>
   );
 };
