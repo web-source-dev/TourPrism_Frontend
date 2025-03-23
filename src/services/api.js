@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_URL = 'https://tourprism-backend.onrender.com';
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://tourprism-backend.onrender.com';
+// const API_URL = 'http://localhost:5000';
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -63,6 +63,7 @@ export const handleGoogleCallback = async (token) => {
 export const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  window.location.href = '/';
 };
 
 export const forgotPassword = async (data) => {
@@ -243,22 +244,38 @@ export const fetchAlerts = async (params = {}) => {
 };
 
 export const getNotifications = async () => {
-  const response = await axios.get('/api/notifications', {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-  });
-  return response.data;
+  try {
+    const response = await api.get('/api/notifications');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error fetching notifications' };
+  }
 };
 
 export const markAsRead = async (notificationId) => {
-  const response = await axios.patch(`/api/notifications/${notificationId}/read`, {}, {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-  });
-  return response.data;
+  try {
+    const response = await api.patch(`/api/notifications/${notificationId}/read`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error marking notification as read' };
+  }
 };
 
 export const deleteNotification = async (notificationId) => {
-  const response = await axios.delete(`/api/notifications/${notificationId}`, {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-  });
-  return response.data;
+  try {
+    const response = await api.delete(`/api/notifications/${notificationId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error deleting notification' };
+  }
+};
+
+// Add new function to mark all notifications as read
+export const markAllAsRead = async () => {
+  try {
+    const response = await api.patch('/api/notifications/mark-all-read');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Error marking all notifications as read' };
+  }
 };

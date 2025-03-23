@@ -1,12 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { Box, AppBar, Toolbar, Typography, Container, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Divider, Button } from '@mui/material';
+// Add Badge to the imports from MUI
+import { Box, AppBar, Toolbar, Typography, Container, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, Divider, Button, Badge } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { logout } from '../services/api';
 
+// Add these imports at the top
+import NotificationDrawer from './NotificationDrawer';
+import { getNotifications } from '../services/api';
+
 const Layout = ({ children, isFooter = true }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: Replace with actual auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
 
+  // Add fetchNotifications function
+  const fetchNotifications = async () => {
+    try {
+      const data = await getNotifications();
+      setNotifications(data);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  // Add useEffect to fetch notifications when logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchNotifications();
+    }
+  }, [isLoggedIn]);
+
+  // Add this line to calculate unread notifications
+  const unreadCount = notifications.filter(notification => !notification.isRead).length;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -21,7 +47,6 @@ const Layout = ({ children, isFooter = true }) => {
     { text: 'My Alerts', icon: 'ri-notification-line', path: '/my-alerts' },
     { text: 'Insights', icon: 'ri-line-chart-line', path: '/insights' },
     { text: 'Rewards', icon: 'ri-gift-line', path: '/rewards' },
-    { text: 'Notifications', icon: 'ri-notification-line', path: '/notifications' },
     { text: 'Subscription', icon: 'ri-vip-crown-line', path: '/subscription' },
     { text: 'Settings', icon: 'ri-settings-line', path: '/settings' },
     { text: 'Logout', icon: 'ri-logout-box-line', path: '/' }
@@ -102,20 +127,32 @@ const Layout = ({ children, isFooter = true }) => {
           </Typography>
           
         </Box>
-        <Link
-              to="/post-alert"
-              style={{
-                color: 'black',
-                textDecoration: 'underline',
-                fontSize: '16px',
-                '&:hover': {
-                  color: '#0066FF'
-                }
-              }}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        {!isLoggedIn && (  <Link
+            to="/post-alert"
+            style={{
+              color: 'black',
+              textDecoration: 'underline',
+              fontSize: '16px',
+              '&:hover': {
+                color: '#0066FF'
+              }
+            }}
+          >
+            Post Alert <i className="ri-arrow-right-up-line"></i>
+          </Link>
+          )}
+          {isLoggedIn && (
+            <IconButton
+              onClick={() => setNotificationDrawerOpen(true)}
+              sx={{ color: 'black' }}
             >
-              Post Alert <i className="ri-arrow-right-up-line"></i>
-            </Link>
-
+              <Badge badgeContent={unreadCount} color="primary">
+                <i className="ri-notification-3-line" style={{ fontSize: '24px' }}></i>
+              </Badge>
+            </IconButton>
+          )}
+        </Box>
           {/* Desktop navigation */}
           <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
             <Link
@@ -229,6 +266,13 @@ const Layout = ({ children, isFooter = true }) => {
               </Typography>
             </Box>
         </Container>
+<NotificationDrawer
+  open={notificationDrawerOpen}
+  onClose={() => setNotificationDrawerOpen(false)}
+  notifications={notifications}
+  onNotificationUpdate={fetchNotifications}
+/>
+
       </Box>
     )}
     </Box>

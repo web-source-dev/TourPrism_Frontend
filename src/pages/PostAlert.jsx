@@ -33,20 +33,7 @@ const PostAlert = () => {
   ];
   console.log("formData",formData)
 
-  // Check if user is logged in when component mounts
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setErrorMessage('Please login to post an alert');
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate('/login', { state: { from: '/post-alert', message: 'You need to be logged in to post an alert' } });
-      }, 2000);
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    // Check if Google Maps script is loaded
     const loadGoogleMapsScript = () => {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places`;
@@ -58,43 +45,90 @@ const PostAlert = () => {
     const initializeAutocomplete = () => {
         const input = document.getElementById('location-input');
         if (window.google && input) {
-          const autocomplete = new window.google.maps.places.Autocomplete(input, {
-            types: ['geocode'],
-            fields: ['formatted_address', 'geometry', 'address_components'],
-          });
-      
+          const options = {
+            types: ['geocode', 'establishment'],
+            fields: ['formatted_address', 'geometry', 'address_components', 'name'],
+          };
+    
+          const autocomplete = new window.google.maps.places.Autocomplete(input, options);
+    
           autocomplete.addListener('place_changed', () => {
             const place = autocomplete.getPlace();
-            if (place.formatted_address && place.geometry) {
-              // Extract latitude and longitude
-              const lat = place.geometry.location.lat();
-              const lng = place.geometry.location.lng();
-      
-              // Extract city from address components
-              let city = '';
-              place.address_components.forEach((component) => {
+            
+            if (!place.geometry) {
+              setErrors(prev => ({ ...prev, location: 'Please select a location from the dropdown' }));
+              return;
+            }
+    
+            const lat = place.geometry.location.lat();
+            const lng = place.geometry.location.lng();
+            let city = '';
+            let formattedAddress = place.formatted_address;
+    
+            if (place.address_components) {
+              for (const component of place.address_components) {
                 if (component.types.includes('locality')) {
                   city = component.long_name;
+                  break;
+                } else if (component.types.includes('administrative_area_level_1') && !city) {
+                  city = component.long_name;
                 }
-              });
-      
-              // Update state with location details
-              setFormData(prev => ({
-                ...prev,
-                location: place.formatted_address,
-                latitude: lat,
-                longitude: lng,
-                city: city,
-              }));
-      
-              // Clear errors if location was previously invalid
-              if (errors.location) {
-                setErrors(prev => ({ ...prev, location: '' }));
               }
+            }
+    
+            setFormData(prev => ({
+              ...prev,
+              location: formattedAddress,
+              latitude: lat,
+              longitude: lng,
+              city: city || 'Unknown'
+            }));
+    
+            if (errors.location) {
+              setErrors(prev => ({ ...prev, location: '' }));
             }
           });
         }
-      };
+    };
+    
+    // New helper function to update location data
+    const updateLocationData = (place) => {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+    
+      // Extract city and other address components
+      let city = '';
+      let formattedAddress = place.formatted_address;
+    
+      if (place.address_components) {
+        place.address_components.forEach((component) => {
+          if (component.types.includes('locality')) {
+            city = component.long_name;
+          } else if (component.types.includes('administrative_area_level_1') && !city) {
+            // Fallback to state/province if city not found
+            city = component.long_name;
+          }
+        });
+      }
+    
+      // If place has a name different from address, include it
+      if (place.name && !formattedAddress.includes(place.name)) {
+        formattedAddress = `${place.name}, ${formattedAddress}`;
+      }
+    
+      setFormData(prev => ({
+        ...prev,
+        location: formattedAddress,
+        latitude: lat,
+        longitude: lng,
+        city: city || 'Unknown',
+      }));
+    
+      // Clear errors if location was previously invalid
+      if (errors.location) {
+        setErrors(prev => ({ ...prev, location: '' }));
+      }
+    };
       
     // Check if script is already loaded
     if (!window.google) {
@@ -223,6 +257,7 @@ const PostAlert = () => {
       description: '',
       media: []
     });
+    window.location.reload();
     setShowSuccessScreen(false);
   };
 
@@ -242,32 +277,7 @@ const PostAlert = () => {
       margin: '0 auto',
       padding: '50px 20px'
     }}>
-      {!localStorage.getItem('token') ? (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Authentication Required
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            You need to be logged in to post a safety alert.
-          </Typography>
-          <Button 
-            variant="contained" 
-            onClick={() => navigate('/login', { state: { from: '/post-alert' } })}
-            sx={{
-              bgcolor: 'black',
-              color: 'white',
-              py: 1.5,
-              px: 4,
-              borderRadius: 8,
-              '&:hover': {
-                bgcolor: '#333',
-              },
-            }}
-          >
-            Go to Login
-          </Button>
-        </Box>
-      ) : (
+
         <>
           <Typography variant="h5" sx={{ fontWeight:'bold', mb: 2 }}>
             Post a Safety Alert
@@ -545,7 +555,6 @@ const PostAlert = () => {
             </Button>
           </form>
         </>
-      )}
 
       {/* Snackbars for error messages */}
       <Snackbar open={!!errorMessage} autoHideDuration={6000} onClose={handleCloseSnackbar}>
