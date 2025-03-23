@@ -55,7 +55,7 @@ const Feed = () => {
       setLoading(true);
       setError(null);
       
-      console.log("Fetching alerts with params:", { city, coords });
+      console.log("Fetching alerts with params:", { city, coords, filters });
       
       // Fetch alerts with location parameters and filters
       const response = await fetchAlerts({
@@ -63,7 +63,9 @@ const Feed = () => {
         latitude: coords?.latitude,
         longitude: coords?.longitude,
         sortBy: filters.sortBy,
-        incidentTypes: filters.incidentTypes
+        incidentTypes: filters.incidentTypes,
+        timeRange: filters.timeRange,
+        distance: filters.distance
       });
       
       console.log("API Response:", response);
@@ -75,7 +77,7 @@ const Feed = () => {
       
       console.log("Extracted alerts data:", alertsData);
       
-      // Filter alerts based on incident types, time range, distance, and status
+      // Filter alerts based on status
       let filteredAlerts = alertsData.filter(alert => alert.status === "approved" || !alert.status);
 
       // Apply time range filter if set
@@ -85,17 +87,26 @@ const Feed = () => {
         filteredAlerts = filteredAlerts.filter(alert => new Date(alert.createdAt) >= cutoffDate);
       }
       
-      // Apply distance filter if set and we have user coordinates
-      if (filters.distance > 0 && coords) {
+      // Apply distance filter if set and we have coordinates (either from user location or alert)
+      if (filters.distance > 0 && (coords || city)) {
         filteredAlerts = filteredAlerts.filter(alert => {
           if (!alert.latitude || !alert.longitude) return false;
           
+          // Use either user coordinates or default Edinburgh coordinates
+          const baseCoords = coords || {
+            latitude: 55.9533, // Edinburgh's latitude
+            longitude: -3.1883 // Edinburgh's longitude
+          };
+          
           // Calculate distance using Haversine formula
           const R = 6371; // Earth's radius in kilometers
-          const lat1 = coords.latitude * Math.PI / 180;
+          const lat1 = baseCoords.latitude * Math.PI / 180;
+          const lon1 = baseCoords.longitude * Math.PI / 180;
           const lat2 = alert.latitude * Math.PI / 180;
-          const dLat = (alert.latitude - coords.latitude) * Math.PI / 180;
-          const dLon = (alert.longitude - coords.longitude) * Math.PI / 180;
+          const lon2 = alert.longitude * Math.PI / 180;
+          
+          const dLat = lat2 - lat1;
+          const dLon = lon2 - lon1;
           
           const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                     Math.cos(lat1) * Math.cos(lat2) *
@@ -108,6 +119,7 @@ const Feed = () => {
         });
       }
       
+      // Apply incident type filter
       if (filters.incidentTypes.length > 0) {
         filteredAlerts = filteredAlerts.filter(alert =>
           filters.incidentTypes.includes(alert.incidentType)
@@ -213,15 +225,41 @@ const Feed = () => {
   };
 
   // Handle successful location retrieval
-  const handleLocationSuccess = (position, highAccuracy = true) => {
+  // Add this function after the existing imports
+  const getCityFromCoordinates = async (latitude, longitude) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+      );
+      const data = await response.json();
+      
+      // Extract city name from the response
+      const city = data.address.city || 
+                   data.address.town || 
+                   data.address.village || 
+                   data.address.suburb ||
+                   "Unknown Location";
+      
+      return city;
+    } catch (error) {
+      console.error("Error getting city name:", error);
+      return "Unknown Location";
+    }
+  };
+
+  const handleLocationSuccess = async (position, highAccuracy = true) => {
     const { latitude, longitude, accuracy } = position.coords;
     console.log("Got user location:", { latitude, longitude, accuracy });
     
-    setLocationCoords({ latitude, longitude });
-    setLocation("Your Location");
+    // Create coordinates object
+    const currentCoords = { latitude, longitude };
+    setLocationCoords(currentCoords);
     setLocationAccuracy(accuracy);
     
-    // If accuracy is poor (>500 meters), show a warning dialog
+    // Get city name from coordinates
+    const cityName = await getCityFromCoordinates(latitude, longitude);
+    setLocation(cityName);
+    
     if (accuracy > 500) {
       setLocationDialogOpen(true);
     }
@@ -230,8 +268,8 @@ const Feed = () => {
     setLocationMessage(`Location accessed with ${qualityMsg} accuracy (±${Math.round(accuracy)}m)`);
     setShowLocationMessage(true);
     
-    // Fetch alerts for user's location
-    fetchLocationAlerts(null, { latitude, longitude });
+    // Fetch alerts with the current coordinates and filters
+    await fetchLocationAlerts(cityName);
   };
 
   // Handle location errors
@@ -362,14 +400,11 @@ const Feed = () => {
                     </Typography>
                   )}
                   
-                  <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary', mb: 1 }}>
+                  <Box sx={{ display: 'flex',gap:3, alignItems: 'center', color: 'text.secondary', mb: 1 }}>
                     <Typography variant="body2">
-                      {alert.location}
+                      {alert.typeLocation || alert.city} {/* Use typeLocation or city instead of location object */}
                     </Typography>
-                    <Typography variant="body2" sx={{ mx: 0.5 }}>•</Typography>
-                    <Typography variant="body2">
-                      {formatTime(alert.createdAt)}
-                    </Typography>
+                    {formatTime(alert.createdAt)}
                   </Box>
                 </CardContent>
                 
@@ -439,16 +474,32 @@ const Feed = () => {
         filters={filters}
         onFilterChange={setFilters}
         resultCount={resultsCount}
-        onApplyFilters={() => {
+        onApplyFilters={async () => {
           setFilterDrawerOpen(false);
-          fetchLocationAlerts(location, locationCoords);
+          // Use current location coordinates if available
+          if (locationCoords?.latitude && locationCoords?.longitude) {
+            await fetchLocationAlerts(null, {
+              ...locationCoords,
+              distance: filters.distance
+            });
+          } else {
+            await fetchLocationAlerts(location);
+          }
         }}
         onClearFilters={() => {
-          setFilters({
+          const newFilters = {
             sortBy: 'relevant',
-            incidentTypes: []
-          });
-          fetchLocationAlerts(location, locationCoords);
+            incidentTypes: [],
+            timeRange: 0,
+            distance: 0
+          };
+          setFilters(newFilters);
+          // Use current location if available
+          if (locationCoords?.latitude && locationCoords?.longitude) {
+            fetchLocationAlerts(null, locationCoords);
+          } else {
+            fetchLocationAlerts(location);
+          }
         }}
       />
     </Container>

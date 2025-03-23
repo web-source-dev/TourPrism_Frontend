@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://tourprism-backend.onrender.com';
-// const API_URL = 'http://localhost:5000';
+// const API_URL = 'https://tourprism-backend.onrender.com';
+const API_URL = 'http://localhost:5000';
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -184,48 +184,60 @@ export const getUserAlerts = async () => {
 };
 
 
-export const fetchAlerts = async (locationParams = {}) => {
+export const fetchAlerts = async (params = {}) => {
   try {
-    // Build query parameters
     const queryParams = new URLSearchParams();
     
-    if (locationParams.city) {
-      queryParams.append('city', locationParams.city);
+    // Location filters
+    if (params.city) {
+      queryParams.append('city', params.city);
     }
-    
-    if (locationParams.latitude && locationParams.longitude) {
-      queryParams.append('latitude', locationParams.latitude);
-      queryParams.append('longitude', locationParams.longitude);
+    if (params.latitude && params.longitude) {
+      // Ensure coordinates are numbers
+      queryParams.append('latitude', Number(params.latitude).toFixed(6));
+      queryParams.append('longitude', Number(params.longitude).toFixed(6));
+      
+      // Only append distance if coordinates are present
+      if (params.distance && params.distance > 0) {
+        queryParams.append('distance', Number(params.distance));
+      }
     }
-    
-    // Set default limit and page if needed
-    queryParams.append('limit', locationParams.limit || 20);
-    queryParams.append('page', locationParams.page || 1);
+
+    // Time range filters
+    if (params.startDate) {
+      queryParams.append('startDate', params.startDate);
+    }
+    if (params.endDate) {
+      queryParams.append('endDate', params.endDate);
+    }
+
+    // Incident type filters
+    if (params.incidentTypes && params.incidentTypes.length > 0) {
+      params.incidentTypes.forEach(type => {
+        queryParams.append('incidentTypes[]', type);
+      });
+    }
+
+    // Pagination
+    queryParams.append('limit', params.limit || 20);
+    queryParams.append('page', params.page || 1);
+
+    // Sorting
+    if (params.sortBy) {
+      queryParams.append('sortBy', params.sortBy);
+      queryParams.append('sortOrder', params.sortOrder || 'desc');
+    }
     
     const queryString = queryParams.toString();
     const endpoint = queryString ? `/api/alerts?${queryString}` : '/api/alerts';
     
-    console.log("API request endpoint:", `${API_URL}${endpoint}`);
-    
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("API error response:", errorText);
-      throw new Error(`Failed to fetch alerts: ${response.status} ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    console.log("API response data:", data);
-    return data;
+    const response = await api.get(endpoint);
+    return response.data;
   } catch (error) {
-    console.error("Error in fetchAlerts:", error);
-    throw error;
+    console.error('Error fetching alerts:', error);
+    throw error.response?.data || {
+      message: 'Failed to fetch alerts. Please try again later.',
+      error: error.message
+    };
   }
 };

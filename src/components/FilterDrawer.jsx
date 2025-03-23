@@ -120,11 +120,11 @@ const FilterDrawer = ({
               value={filters.distance || 0}
               onChange={handleDistanceChange}
               min={0}
-              max={50}
+              max={100}
               step={1}
               marks={[
                 { value: 0, label: '0' },
-                { value: 50, label: '50km' }
+                { value: 100, label: '100km' }
               ]}
               valueLabelDisplay="auto"
               valueLabelFormat={(value) => `${value}km`}
