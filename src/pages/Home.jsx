@@ -1,8 +1,10 @@
 import React from 'react';
 import { Box, Typography, Container, Grid, Button, Divider } from '@mui/material';
 import Layout from '../components/Layout';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <Layout>
       <Container>
@@ -31,6 +33,7 @@ const Home = () => {
           <Button
             variant="contained"
             size="large"
+            onClick={() => navigate('/signup')}
             sx={{
               bgcolor: 'black',
               borderRadius: 8,

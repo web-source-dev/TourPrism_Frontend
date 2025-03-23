@@ -43,10 +43,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/google/callback" element={<GoogleCallback />} />
         <Route path="*" element={<NotFound />} />
-    
-        <Route element={<ProtectedRoute />}>
           <Route path="/post-alert" element={<PostAlert />} />
-        </Route>
         <Route element={<ProtectedRoute />}>
           <Route path="/feed" element={<Feed />} />
         </Route>
