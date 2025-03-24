@@ -117,7 +117,7 @@ const Feed = () => {
       const alert = alerts.find(a => a._id === alertId);
       if (!alert) return;
 
-      const shareText = `${alert.header}:\n\n${alert.description}. ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://tourprism.com`;
+      const shareText = `${alert.header}:\n\n${alert.description}. ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://alerts.tourprism.com/`;
 
       if (navigator.share) {
         await navigator.share({
