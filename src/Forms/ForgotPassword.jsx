@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography, CircularProgress } from '@mui/material';
+import { Box, Button, Typography, CircularProgress,TextField,InputAdornment,IconButton } from '@mui/material';
+import { Visibility, VisibilityOff, Lock } from "@mui/icons-material";
+
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPassword, verifyResetOTP, resetPassword, resendResetOTP } from '../services/api';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/feed');
+    }
+  }, [navigate]);
+
   const [step, setStep] = useState(1);
   const [userId, setUserId] = useState('');
   const [timer, setTimer] = useState(0);
@@ -168,16 +178,18 @@ const ForgotPassword = () => {
         pt: '5rem',
       }}
     >
-      <Typography
-        component="h1"
-        variant="h5"
-        sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 5, fontWeight: 'bold', fontSize: '24px' }}
-      >
-        <span style={{ color: '#0066FF' }}>t</span> tourprism
-      </Typography>
+     
 
       <form onSubmit={step === 1 ? handleSubmitEmail : step === 2 ? handleSubmitOTP : handleSubmitPassword} style={{ width: '100%' }}>
         {step === 1 && (
+          <>
+           <Typography
+           component="h1"
+           variant="h5"
+           sx={{ display: 'flex', alignItems: 'center', justifyContent:'center',gap: 1, mb: 5, fontWeight: 'bold', fontSize: '24px' }}
+         >
+           <span style={{ color: '#0066FF' }}>t</span> tourprism
+         </Typography>
        <div style={{ position: 'relative', width: '100%' }}>
        {/* Email Icon */}
        <span style={{
@@ -229,190 +241,138 @@ const ForgotPassword = () => {
          </div>
        )}
      </div>
-     
+     </>
       
         )}
 
         {step === 2 && (
-<>
-<Typography variant="body1" sx={{ mb: 2, textAlign: 'center' }}>
-              Please enter the 6-digit code sent to your email
-            </Typography>
+          <>
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <img src="/images/verify-email.png" alt="Verify Email" style={{ width: '64px', height: '64px', marginBottom: '16px' }} />
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Verify your email address
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                To verify your email address please enter the 6-digit code sent to {formData.email}
+              </Typography>
+            </Box>
+
             <div style={{ position: 'relative', width: '100%' }}>
-  {/* OTP Icon */}
-  <span style={{
-    position: 'absolute',
-    left: '12px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    fontSize: '18px',
-    color: 'gray'
-  }}>
-    <i className="ri-key-2-line"></i>
-  </span>
+              <input
+                type="text"
+                name="otp"
+                placeholder="******"
+                value={formData.otp}
+                onChange={handleChange}
+                maxLength={6}
+                disabled={isLoading}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: errors.otp ? '1px solid #d32f2f' : '1px solid rgb(202, 202, 202)',
+                  backgroundColor: isLoading ? '#f5f5f5' : '#fff',
+                  fontSize: '16px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  textAlign: 'center',
+                  letterSpacing: '8px',
+                  height: '45px',
+                }}
+              />
 
-  {/* OTP Input */}
-  <input
-    type="text"
-    name="otp"
-    placeholder="Enter OTP"
-    value={formData.otp}
-    onChange={handleChange}
-    maxLength={6}
-    disabled={isLoading}
-    style={{
-      width: '100%',
-      padding: '10px 14px 10px 45px',
-      borderRadius: '8px',
-      border: errors.otp ? '1px solid #d32f2f' : '1px solid rgb(202, 202, 202)',
-      backgroundColor: isLoading ? '#f5f5f5' : '#fff',
-      fontSize: '16px',
-      outline: 'none',
-      boxSizing: 'border-box',
-      cursor: isLoading ? 'not-allowed' : 'text',
-      height: '45px',
-    }}
-  />
+              {errors.otp && (
+                <div style={{
+                  position: 'absolute',
+                  top: '50px',
+                  left: '0',
+                  color: '#d32f2f',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  justifyContent: 'center'
+                }}>
+                  <i className="ri-information-line" style={{ marginRight: '5px' }}></i>
+                  {errors.otp}
+                </div>
+              )}
+            </div>
 
-  {/* Error Message (Doesn't Shift Input) */}
-  {errors.otp && (
-    <div style={{
-      position: 'absolute',
-      top: '50px',
-      left: '0',
-      color: '#d32f2f',
-      fontSize: '14px',
-      display: 'flex',
-      alignItems: 'center',
-    }}>
-      <i className="ri-information-line" style={{ marginRight: '5px' }}></i>
-      {errors.otp}
-    </div>
-  )}
-</div>
-
-  {/* Resend OTP Section */}
-  <div style={{ marginTop: '36px', textAlign: 'center'}}>
-    <span style={{ fontSize: '14px' }}>Didn't receive the code? </span>
-    <button
-      onClick={handleResendOTP}
-      disabled={timer > 0 || isLoading}
-      style={{
-        background: 'none',
-        border: 'none',
-        color: timer > 0 ? 'gray' : '#007bff',
-        fontSize: '14px',
-        cursor: timer > 0 || isLoading ? 'not-allowed' : 'pointer',
-        textDecoration: 'underline',
-      }}
-    >
-      {timer > 0 ? `Resend in ${timer}s` : 'Resend'}
-    </button>
-  </div>
-
-</>
+            <Typography variant="body2" sx={{ mt: 3, textAlign: 'center', color: 'text.secondary' }}>
+              Didn't get the email? <button
+                onClick={handleResendOTP}
+                disabled={timer > 0 || isLoading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: timer > 0 ? 'gray' : '#000',
+                  cursor: timer > 0 || isLoading ? 'not-allowed' : 'pointer',
+                  padding: 0,
+                  font: 'inherit',
+                  textDecoration: 'underline'
+                }}
+              >
+                {timer > 0 ? `Please check your spam. Resend Code (${timer}s)` : 'Resend Code'}
+              </button>
+            </Typography>
+          </>
         )}
 
         {step === 3 && (
           <>
-            <div style={{ position: 'relative', width: '100%', marginBottom: '1rem' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'gray' }}>
-                <i className="ri-lock-2-line"></i>
-              </span>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="newPassword"
-                placeholder="New Password"
-                value={formData.newPassword}
-                onChange={handleChange}
-                disabled={isLoading}
-                style={{
-                  width: '100%',
-                  padding: '10px 45px 10px 45px',
-                  borderRadius: '8px',
-                  border: errors.newPassword ? '1px solid #d32f2f' : '1px solid rgb(202, 202, 202)',
-                  backgroundColor: isLoading ? '#f5f5f5' : '#fff',
-                  fontSize: '16px',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  cursor: isLoading ? 'not-allowed' : 'text',
-                  height: '45px'
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: isLoading ? 'not-allowed' : 'pointer',
-                  fontSize: '18px',
-                  opacity: isLoading ? 0.7 : 1
-                }}
-              >
-                <i className={showPassword ? 'ri-eye-line' : 'ri-eye-off-line'}></i>
-              </button>
-              {errors.newPassword && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50px',
-                  left: '0',
-                  color: '#d32f2f',
-                  fontSize: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}>
-                  <i className="ri-information-line" style={{ marginRight: '5px' }}></i>
-                  {errors.newPassword}
-                </div>
-              )}
-            </div>
+      <Typography
+        component="h1"
+        variant="h5"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          gap: 1,
+          mb: 5,
+          fontWeight: "bold",
+          fontSize: "24px",
+        }}
+      >
+        <span style={{ color: "#0066FF" }}>t</span> tourprism
+      </Typography>
 
-            <div style={{ position: 'relative', width: '100%', marginTop: '2rem' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'gray' }}>
-                <i className="ri-lock-2-line"></i>
-              </span>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                disabled={isLoading}
-                style={{
-                  width: '100%',
-                  padding: '10px 45px 10px 45px',
-                  borderRadius: '8px',
-                  border: errors.confirmPassword ? '1px solid #d32f2f' : '1px solid rgb(202, 202, 202)',
-                  backgroundColor: isLoading ? '#f5f5f5' : '#fff',
-                  fontSize: '16px',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  cursor: isLoading ? 'not-allowed' : 'text',
-                  height: '45px'
-                }}
-              />
-              {errors.confirmPassword && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50px',
-                  left: '0',
-                  color: '#d32f2f',
-                  fontSize: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}>
-                  <i className="ri-information-line" style={{ marginRight: '5px' }}></i>
-                  {errors.confirmPassword}
-                </div>
-              )}
-            </div>
-          </>
+      {["newPassword", "confirmPassword"].map((field, index) => (
+        <TextField
+          key={field}
+          type={showPassword ? "text" : "password"}
+          name={field}
+          label={field === "newPassword" ? "New Password" : "Confirm Password"}
+          value={formData[field]}
+          onChange={handleChange}
+          disabled={isLoading}
+          error={Boolean(errors[field])}
+          helperText={errors[field]}
+          fullWidth
+          margin="normal"
+          variant="outlined"
+          sx={{ mb: index === 0 ? 2 : 0 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Lock color="disabled" />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      ))}
+    </>
         )}
 
         {errors.submit && (

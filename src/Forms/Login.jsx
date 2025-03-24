@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, CircularProgress, Alert } from '@mui/material';
+import { Box, Button, Typography, CircularProgress, Alert ,CardMedia} from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { login, googleLogin, verifyOTP, resendOTP } from '../services/api';
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,10 +13,70 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    otp: ''
+    otp: ['', '', '', '', '', '']
   });
+
+  const handleOTPPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const newOTP = [...formData.otp];
+    pastedData.split('').forEach((char, index) => {
+      if (index < 6) newOTP[index] = char;
+    });
+    setFormData(prev => ({ ...prev, otp: newOTP }));
+  };
+
+  const handleOTPChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+
+    const newOTP = [...formData.otp];
+    newOTP[index] = value;
+    setFormData(prev => ({
+      ...prev,
+      otp: newOTP
+    }));
+
+    if (value && index < 5) {
+      const nextInput = document.querySelector(`input[name=otp-${index + 1}]`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOTPKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && !formData.otp[index] && index > 0) {
+      const prevInput = document.querySelector(`input[name=otp-${index - 1}]`);
+      if (prevInput) {
+        prevInput.focus();
+        const newOTP = [...formData.otp];
+        newOTP[index - 1] = '';
+        setFormData(prev => ({ ...prev, otp: newOTP }));
+      }
+    }
+    else if (e.key === 'ArrowLeft' && index > 0) {
+      const prevInput = document.querySelector(`input[name=otp-${index - 1}]`);
+      if (prevInput) prevInput.focus();
+    }
+    else if (e.key === 'ArrowRight' && index < 5) {
+      const nextInput = document.querySelector(`input[name=otp-${index + 1}]`);
+      if (nextInput) nextInput.focus();
+    }
+  };
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/feed');
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    // Check if we were redirected from the alert form
+    if (location.state && location.state.from === '/post-alert') {
+      setRedirectMessage(location.state.message || 'Please login to post an alert');
+    }
+  }, [location]);
   const [errors, setErrors] = useState({
     email: '',
     password: '',
@@ -65,11 +126,12 @@ const Login = () => {
   };
 
   const validateOTP = () => {
-    if (!formData.otp) {
+    const otpString = formData.otp.join('');
+    if (!otpString) {
       setErrors(prev => ({ ...prev, otp: 'OTP is required' }));
       return false;
     }
-    if (!/^\d{6}$/.test(formData.otp)) {
+    if (!/^\d{6}$/.test(otpString)) {
       setErrors(prev => ({ ...prev, otp: 'OTP must be 6 digits' }));
       return false;
     }
@@ -112,7 +174,6 @@ const Login = () => {
       setIsLoading(true);
       try {
         const response = await login(formData);
-        // In handleSubmit function, update the navigation paths
         if (response.needsVerification) {
           setUserId(response.userId);
           setStep(2);
@@ -135,7 +196,7 @@ const Login = () => {
     } else if (step === 2 && validateOTP()) {
       setIsLoading(true);
       try {
-        await verifyOTP({ userId, otp: formData.otp });
+        await verifyOTP({ userId, otp: formData.otp.join('') });
         if (location.state && location.state.from) {
           navigate(location.state.from);
         } else {
@@ -360,33 +421,45 @@ const Login = () => {
         </>
         ) : (
           <div style={{ position: 'relative', width: '100%' }}>
+            <CardMedia
+              component="img"
+              image="/images/verify-email.png"
+              alt="OTP"
+              sx={{ width: '100%', maxWidth: 90, margin: '40px auto', display: 'block' }}
+            />
             <Typography variant="body1" sx={{ mb: 2, textAlign: 'center' }}>
-              Please enter the 6-digit code sent to your email
+              Please enter the 6-digit code sent to {formData.email}
             </Typography>
-            <div style={{ position: 'relative', width: '100%' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'gray' }}>
-                <i className="ri-key-2-line"></i>
-              </span>
-              <input
-                type="text"
-                name="otp"
-                placeholder="Enter OTP"
-                value={formData.otp}
-                onChange={handleChange}
-                maxLength={6}
-                disabled={isLoading}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px 10px 45px',
-                  borderRadius: '8px',
-                  border: errors.otp ? '1px solid #d32f2f' : '1px solid rgb(202, 202, 202)',
-                  backgroundColor: isLoading ? '#f5f5f5' : '#fff',
-                  fontSize: '16px',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
+            
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', my: 3 }}>
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <input
+                  key={index}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="\d*"
+                  name={`otp-${index}`}
+                  value={formData.otp[index]}
+                  onChange={(e) => handleOTPChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOTPKeyDown(e, index)}
+                  onPaste={handleOTPPaste}
+                  maxLength={1}
+                  disabled={isLoading}
+                  style={{
+                    width: '45px',
+                    height: '45px',
+                    textAlign: 'center',
+                    fontSize: '20px',
+                    borderRadius: '8px',
+                    border: errors.otp ? '1px solid #d32f2f' : '1px solid rgb(202, 202, 202)',
+                    backgroundColor: isLoading ? '#f5f5f5' : '#fff',
+                    outline: 'none',
+                    cursor: 'text',
+                  }}
+                  onFocus={(e) => e.target.select()}
+                />
+              ))}
+            </Box>
             {errors.otp && (
               <Typography variant="body2" color="error" sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                 <i className="ri-information-line"></i> {errors.otp}
@@ -437,3 +510,5 @@ const Login = () => {
 };
 
 export default Login;
+
+

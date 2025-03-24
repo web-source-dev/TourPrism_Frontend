@@ -94,17 +94,40 @@ const Feed = () => {
     }
   };
 
+  const formatTime = (createdAt) => {
+    try {
+      const result = formatDistanceToNowStrict(new Date(createdAt), { addSuffix: false });
+
+      return result
+        .replace(" hours", "h")
+        .replace(" hour", "h")
+        .replace(" minutes", "m")
+        .replace(" minute", "m")
+        .replace(" days", "d")
+        .replace(" day", "d")
+        .replace(" seconds", "s")
+        .replace(" second", "s");
+    } catch (error) {
+      return "recently";
+    }
+  };
+
   const handleShare = async (alertId) => {
     try {
+      const alert = alerts.find(a => a._id === alertId);
+      if (!alert) return;
+
+      const shareText = `Safety Alert in ${alert.header || alert.typeLocation}:\n\n${alert.description} - ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://tourprism.com`;
+
       if (navigator.share) {
         await navigator.share({
-          title: alert.title || "Check this out!",
-          text: alert.description || "Here's something interesting!",
-          url: window.location.href // Change this to a specific alert URL if needed
+          title: 'TourPrism Safety Alert',
+          text: shareText,
         });
       } else {
-        console.log("Share API not supported on this device");
+        console.log('Share API not supported on this device');
       }
+
       const response = await shareAlert(alertId);
       setAlerts(alerts.map(alert => {
         if (alert._id === alertId) {
@@ -402,24 +425,10 @@ const Feed = () => {
     handleUseMyLocation();
   };
 
-  const formatTime = (createdAt) => {
-    try {
-      const result = formatDistanceToNowStrict(new Date(createdAt), { addSuffix: false });
-
-      return result
-        .replace(" hours", "h")
-        .replace(" hour", "h")
-        .replace(" minutes", "m")
-        .replace(" minute", "m")
-        .replace(" days", "d")
-        .replace(" day", "d")
-        .replace(" seconds", "s")
-        .replace(" second", "s");
-    } catch (error) {
-      return "recently";
-    }
-  };
-
+  const [visible,setVisible] = useState(10)
+  const handleLoadMore = () => {
+    setVisible(prev => prev + 10)
+  }
 
   return (
     <Layout isFooter={false}>
@@ -484,27 +493,21 @@ const Feed = () => {
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           {alerts.length > 0 ? (
-            // In the Card rendering section where you map through alerts
-            alerts.map((alert) => (
+            <>
+            {alerts.slice(0, visible).map((alert) => (
               <Card key={alert._id} sx={{ boxShadow: 'none', mb: 1, p: 0 }}>
                 <CardContent sx={{p:0}}>
                   <Typography variant="body2" component="div" sx={{ fontWeight: '600', mb: 1 }}>
-                    {alert.typeLocation || alert.city} {/* Use typeLocation or city instead of location object */}
+                    {alert.header || alert.typeLocation} 
                   </Typography>
 
                   <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
-                    {alert.description}
+                    {alert.description} - {alert.action}
                   </Typography>
-
-                  {alert.action && (
-                    <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
-                      {alert.action}
-                    </Typography>
-                  )}
 
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', color: 'text.secondary' }}>
                     <Typography variant="body2" sx={{ fontWeight: '600',fontSize:'12px', color: "#000" }}>
-                      {alert.typeLocation || alert.city} {/* Use typeLocation or city instead of location object */}
+                      {alert.typeLocation || alert.city}
                     </Typography>
                     <i class="ri-circle-fill" style={{ fontSize: '6px' }}></i>
                     <Typography variant="body2" sx={{ fontWeight: '600',fontSize:'12px', color: "#000" }}>
@@ -516,7 +519,7 @@ const Feed = () => {
                   <IconButton size="small" onClick={() => handleLike(alert._id)}>
                     <Box display="flex" alignItems="center" gap={0.5}>
                       {alert.isLiked ? (
-                        <ThumbUp fontSize="small" color="primary" />
+                        <ThumbUp fontSize="small" color="#000" />
                       ) : (
                         <ThumbUpOutlined fontSize="small" />
                       )}
@@ -526,7 +529,7 @@ const Feed = () => {
                   <IconButton size="small" onClick={() => handleShare(alert._id)}>
                     <Box display="flex" alignItems="center" gap={0.5}>
                       {alert.isShared ? (
-                        <i className="ri-share-2-line" style={{color:"#0066ffb3"}}></i>
+                        <i className="ri-share-2-line" style={{color:"#000"}}></i>
                       ) : (
                         <i className="ri-share-2-line"></i>
                       )}
@@ -547,7 +550,28 @@ const Feed = () => {
                 <Divider />
 
               </Card>
-            ))
+            ))}
+            {alerts.length > visible && (
+         <Button 
+    onClick={handleLoadMore} 
+    fullWidth 
+    variant="outlined" 
+    sx={{
+      mt: 2,
+      border: '2px solid #eee', 
+      borderRadius: 5,       
+      color: '#333',         
+      padding: '10px',           
+      fontWeight: 'bold',      
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
+      }
+    }}
+  >
+    See More
+  </Button>
+            )}
+            </>
           ) : (
             <Typography variant="body1" color="text.secondary" align="center" sx={{ my: 4 }}>
               No alerts found {location === "Edinburgh" ? "in Edinburgh" : "for your location"}.
