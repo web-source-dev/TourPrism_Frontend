@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://tourprism-backend.onrender.com';
+const API_URL = 'https://tourprism-backend.onrender.com/api';
 // const API_URL = 'http://localhost:5000/api';
 const api = axios.create({
   baseURL: API_URL,
@@ -41,6 +41,15 @@ export const flagAlert = async (alertId) => {
 export const shareAlert = async (alertId) => {
   try {
     const response = await api.post(`/alerts/${alertId}/share`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const flagAlert = async (alertId) => {
+  try {
+    const response = await api.post(`/alerts/${alertId}/flag`);
     return response.data;
   } catch (error) {
     throw error;
