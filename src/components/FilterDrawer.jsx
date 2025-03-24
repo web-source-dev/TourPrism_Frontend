@@ -13,8 +13,7 @@ import {
   Divider,
   Slider,
 } from '@mui/material';
-import Cancel from '@mui/icons-material/Cancel';
-
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 const INCIDENT_TYPES = [
   'Scam',
   'Theft',
@@ -91,9 +90,7 @@ const FilterDrawer = ({
           <Typography variant="h6" gutterBottom>
             Sort By
           </Typography>
-          <Button onClick={onClose} sx={{ color: 'black' }}>
-            <Cancel />
-          </Button>
+            <CloseOutlinedIcon  onClick={onClose}/>
         </Box>
         <FormControl fullWidth size="small">
           <Select

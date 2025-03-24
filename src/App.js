@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './styles/theme';
 import Login from './Forms/Login';
 import SignUp from './Forms/SignUp';
 import ForgotPassword from './Forms/ForgotPassword';
@@ -38,7 +40,8 @@ const GoogleCallback = () => {
 const App = () => {
 
   return (
-    <Router>
+    <ThemeProvider theme={theme}>
+      <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -56,6 +59,7 @@ const App = () => {
         <Route path="/session-expired" element={<SessionExpired />} />
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 };
 
