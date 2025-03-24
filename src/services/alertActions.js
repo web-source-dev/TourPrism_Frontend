@@ -46,12 +46,3 @@ export const shareAlert = async (alertId) => {
     throw error;
   }
 };
-
-export const flagAlert = async (alertId) => {
-  try {
-    const response = await api.post(`/alerts/${alertId}/flag`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
