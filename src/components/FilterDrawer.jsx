@@ -185,7 +185,7 @@ const FilterDrawer = ({
           <Slider
             value={filters.distance || 0}
             onChange={handleDistanceChange}
-            min={0}
+            min={2}
             max={100}
             step={1}
             marks={[{ value: 0, label: '0' }, { value: 100, label: '100km' }]}

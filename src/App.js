@@ -9,6 +9,7 @@ import PostAlert from './pages/PostAlert';
 import { handleGoogleCallback } from './services/api';
 import ProtectedRoute from './components/ProtectedRoute';
 import Feed from './pages/Feed';
+import BulkAlertUpload from './components/BulkAlertUpload';
 const GoogleCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,6 +48,9 @@ const App = () => {
           <Route path="/post-alert" element={<PostAlert />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/feed" element={<Feed />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/bulk" element={<BulkAlertUpload />} />
         </Route>
       </Routes>
     </Router>
