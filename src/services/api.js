@@ -16,6 +16,32 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const getErrorMessage = (error) => {
+  // Handle network errors
+  if (!error.response) {
+    return 'Unable to connect to the server. Please check your internet connection.';
+  }
+
+  // Handle specific error messages from backend
+  const backendMessage = error.response?.data?.message;
+  if (backendMessage) {
+    // Map backend messages to user-friendly messages
+    const messageMap = {
+      'Invalid credentials': 'The email or password you entered is incorrect.',
+      'User already exists': 'An account with this email already exists.',
+      'User not found': 'No account found with this email address.',
+      'Invalid or expired OTP': 'The verification code is invalid or has expired.',
+      'Email already verified': 'Your email is already verified.',
+      'Please wait before requesting another OTP': 'Please wait a moment before requesting another verification code.',
+      'This email is registered with Google. Please continue with Google login.': 'This email is linked to a Google account. Please use Google Sign In instead.',
+    };
+    return messageMap[backendMessage] || backendMessage;
+  }
+
+  // Default error message
+  return 'Something went wrong. Please try again later.';
+};
+
 export const register = async (userData) => {
   try {
     const response = await api.post('/auth/register', userData);
@@ -25,7 +51,7 @@ export const register = async (userData) => {
     }
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'An error occurred' };
+    throw { message: getErrorMessage(error) };
   }
 };
 
@@ -38,7 +64,7 @@ export const login = async (credentials) => {
     }
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'An error occurred' };
+    throw { message: getErrorMessage(error) };
   }
 };
 
@@ -75,29 +101,49 @@ export const forgotPassword = async (data) => {
   }
 };
 
+// Add this to your interceptors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear localStorage and redirect to login if token is expired
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Update verifyOTP function
 export const verifyOTP = async (data) => {
   try {
     const response = await api.post('/auth/verify-email', data);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'An error occurred' };
+    throw { message: getErrorMessage(error) };
   }
 };
 
 export const verifyResetOTP = async (data) => {
-    try {
-      const response = await api.post('/auth/verify-reset-otp', data);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'An error occurred' };
-    }
-  };
+  try {
+    const response = await api.post('/auth/verify-reset-otp', data);
+    return response.data;
+  } catch (error) {
+    throw { message: getErrorMessage(error) };
+  }
+};
+
 export const resetPassword = async (data) => {
   try {
     const response = await api.post('/auth/reset-password', data);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'An error occurred' };
+    throw { message: getErrorMessage(error) };
   }
 };
 
@@ -106,7 +152,7 @@ export const resendOTP = async (data) => {
     const response = await api.post('/auth/resend-otp', data);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'An error occurred' };
+    throw { message: getErrorMessage(error) };
   }
 };
 
@@ -115,7 +161,7 @@ export const resendResetOTP = async (data) => {
     const response = await api.post('/auth/resend-reset-otp', data);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: 'An error occurred while resending OTP' };
+    throw { message: getErrorMessage(error) };
   }
 };
 

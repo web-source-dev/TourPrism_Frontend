@@ -44,6 +44,7 @@ const Layout = ({ children, isFooter = true }) => {
 
   const menuItems = isLoggedIn ? [
     { text: 'Feed', icon: 'ri-home-line', path: '/feed' },
+    { text: 'Post Alert', icon: 'ri-notification-line', path: '/post-alert' },
     { text: 'My Alerts', icon: 'ri-notification-line', path: '/my-alerts' },
     { text: 'Insights', icon: 'ri-line-chart-line', path: '/insights' },
     { text: 'Rewards', icon: 'ri-gift-line', path: '/rewards' },
@@ -147,7 +148,7 @@ const Layout = ({ children, isFooter = true }) => {
               onClick={() => setNotificationDrawerOpen(true)}
               sx={{ color: 'black' }}
             >
-              <Badge badgeContent={unreadCount} color="primary">
+              <Badge badgeContent={unreadCount} color="error">
                 <i className="ri-notification-3-line" style={{ fontSize: '24px' }}></i>
               </Badge>
             </IconButton>
@@ -250,15 +251,15 @@ const Layout = ({ children, isFooter = true }) => {
               >
                 <span style={{ color: '#0066FF' }}>t</span> tourprism
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Link to="mailto:info@tourprism.com" style={{ color: 'black' }}>
-                  <i className="ri-mail-line" style={{ fontSize: '24px' }}></i>
+              <Box sx={{ display: 'flex', gap: 2,alignItems:'center' }}>
+                <Link to="mailto:info@tourprism.com" style={{ color: 'black',textDecoration:'none' }}>
+                  <i className="ri-mail-fill" style={{ fontSize: '24px' }}></i>
                 </Link>
-                <Link to="https://linkedin.com" target="_blank" style={{ color: 'black' }}>
-                  <i className="ri-linkedin-box-line" style={{ fontSize: '24px' }}></i>
+                <Link to="https://linkedin.com" target="_blank" style={{ color: 'black',textDecoration:'none'  }}>
+                  <i className="ri-linkedin-box-fill" style={{ fontSize: '27px' }}></i>
                 </Link>
-                <Link to="https://twitter.com" target="_blank" style={{ color: 'black' }}>
-                  <i className="ri-twitter-x-line" style={{ fontSize: '24px' }}></i>
+                <Link to="https://twitter.com" target="_blank" style={{ color: 'white',textDecoration:'none',backgroundColor:'#000',borderRadius:'5px',height:'22px'}}>
+                  <i className="ri-twitter-x-fill" style={{ fontSize: '20px' }}></i>
                 </Link>
               </Box>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -266,15 +267,15 @@ const Layout = ({ children, isFooter = true }) => {
               </Typography>
             </Box>
         </Container>
+      </Box>
+    )}
+    
 <NotificationDrawer
   open={notificationDrawerOpen}
   onClose={() => setNotificationDrawerOpen(false)}
   notifications={notifications}
   onNotificationUpdate={fetchNotifications}
 />
-
-      </Box>
-    )}
     </Box>
   );
 };

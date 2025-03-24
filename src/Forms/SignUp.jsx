@@ -97,11 +97,13 @@ const SignUp = () => {
       } finally {
         setIsLoading(false);
       }
-    } else if (step === 2 && validateOTP()) {
+    } // In handleSubmit function, modify the step 2 verification part
+    else if (step === 2 && validateOTP()) {
       setIsLoading(true);
       try {
-        await verifyOTP({ userId, otp: formData.otp });
-        navigate('/');
+        const response = await verifyOTP({ userId, otp: formData.otp });
+        // User will be automatically logged in as verifyOTP now sets the token
+        navigate('/feed'); // Changed from '/' to '/feed'
       } catch (error) {
         setErrors(prev => ({
           ...prev,

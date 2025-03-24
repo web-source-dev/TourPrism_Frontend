@@ -112,6 +112,7 @@ const Login = () => {
       setIsLoading(true);
       try {
         const response = await login(formData);
+        // In handleSubmit function, update the navigation paths
         if (response.needsVerification) {
           setUserId(response.userId);
           setStep(2);
@@ -120,7 +121,7 @@ const Login = () => {
           if (location.state && location.state.from) {
             navigate(location.state.from);
           } else {
-            navigate('/');
+            navigate('/feed');
           }
         }
       } catch (error) {
@@ -401,6 +402,33 @@ const Login = () => {
                 {timer > 0 ? `Resend in ${timer}s` : 'Resend'}
               </Button>
             </Typography>
+
+            {/* Add Verify OTP Button */}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={isLoading}
+              sx={{
+                mt: 3,
+                mb: 2,
+                bgcolor: 'black',
+                borderRadius: '8px',
+                py: 1.5,
+                '&:hover': {
+                  bgcolor: '#333',
+                },
+              }}
+            >
+              {isLoading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={20} color="inherit" />
+                  <span>Verifying...</span>
+                </Box>
+              ) : (
+                'Verify'
+              )}
+            </Button>
           </div>
         )}
       </form>

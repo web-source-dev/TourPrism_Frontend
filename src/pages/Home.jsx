@@ -5,6 +5,13 @@ import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const navigate = useNavigate();
+  const handleGetStartedClick = () => {
+    if(localStorage.getItem('token')) {
+      navigate('/feed');
+    } else {
+      navigate('/signup');
+    }
+  };
   return (
     <Layout>
       <Container>
@@ -33,7 +40,7 @@ const Home = () => {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate('/signup')}
+            onClick={handleGetStartedClick}
             sx={{
               bgcolor: 'black',
               borderRadius: 8,

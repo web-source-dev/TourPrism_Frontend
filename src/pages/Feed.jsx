@@ -66,15 +66,31 @@ const Feed = () => {
           return {
             ...alert,
             likes: response.likes,
-            likedBy: response.liked
-              ? [...(alert.likedBy || []), userId]
-              : (alert.likedBy || []).filter(id => id !== userId)
+            isLiked: response.liked
           };
         }
         return alert;
       }));
     } catch (error) {
       console.error("Error liking alert:", error);
+    }
+  };
+  
+  // Update the handleFlag function
+  const handleFlag = async (alertId) => {
+    try {
+      const response = await flagAlert(alertId);
+      setAlerts(alerts.map(alert => {
+        if (alert._id === alertId) {
+          return {
+            ...alert,
+            isFlagged: response.flagged
+          };
+        }
+        return alert;
+      }));
+    } catch (error) {
+      console.error("Error flagging alert:", error);
     }
   };
 
@@ -105,34 +121,16 @@ const Feed = () => {
     }
   };
 
-  const handleFlag = async (alertId) => {
-    try {
-      const response = await flagAlert(alertId);
-      setAlerts(alerts.map(alert => {
-        if (alert._id === alertId) {
-          return {
-            ...alert,
-            flaggedBy: response.flagged
-              ? [...(alert.flaggedBy || []), userId]
-              : (alert.flaggedBy || []).filter(id => id !== userId)
-          };
-        }
-        return alert;
-      }));
-    } catch (error) {
-      console.error("Error flagging alert:", error);
-    }
-  };
-
   // Update the CardActions section in the alerts.map
   // Fetch alerts based on current location settings and filters
+  // Update the fetchLocationAlerts function
   const fetchLocationAlerts = async (city = "Edinburgh", coords = null) => {
     try {
       setLoading(true);
       setError(null);
-
+  
       console.log("Fetching alerts with params:", { city, coords, filters });
-
+  
       // Fetch alerts with location parameters and filters
       const response = await fetchAlerts({
         city: city || undefined,  // Only pass city if it has a value
@@ -143,65 +141,65 @@ const Feed = () => {
         timeRange: filters.timeRange,
         distance: filters.distance
       });
-
+  
       console.log("API Response:", response);
-
+  
       // Extract alerts from response correctly
       const alertsData = Array.isArray(response)
         ? response
         : (response.alerts ? response.alerts : []);
-
+  
       console.log("Extracted alerts data:", alertsData);
-
+  
       // Filter alerts based on status
       let filteredAlerts = alertsData.filter(alert => alert.status === "approved" || !alert.status);
-
+  
       // Apply time range filter if set
       if (filters.timeRange > 0) {
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - filters.timeRange);
         filteredAlerts = filteredAlerts.filter(alert => new Date(alert.createdAt) >= cutoffDate);
       }
-
+  
       // Apply distance filter if set and we have coordinates (either from user location or alert)
       if (filters.distance > 0 && (coords || city)) {
         filteredAlerts = filteredAlerts.filter(alert => {
           if (!alert.latitude || !alert.longitude) return false;
-
+  
           // Use either user coordinates or default Edinburgh coordinates
           const baseCoords = coords || {
             latitude: 55.9533, // Edinburgh's latitude
             longitude: -3.1883 // Edinburgh's longitude
           };
-
+  
           // Calculate distance using Haversine formula
           const R = 6371; // Earth's radius in kilometers
           const lat1 = baseCoords.latitude * Math.PI / 180;
           const lon1 = baseCoords.longitude * Math.PI / 180;
           const lat2 = alert.latitude * Math.PI / 180;
           const lon2 = alert.longitude * Math.PI / 180;
-
+  
           const dLat = lat2 - lat1;
           const dLon = lon2 - lon1;
-
+  
           const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(lat1) * Math.cos(lat2) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
+  
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
           const distance = R * c; // Distance in kilometers
-
+  
           return distance <= filters.distance;
         });
       }
-
+  
       // Apply incident type filter
       if (filters.incidentTypes.length > 0) {
         filteredAlerts = filteredAlerts.filter(alert =>
           filters.incidentTypes.includes(alert.incidentType)
         );
       }
-
+  
       // Sort alerts based on selected option
       filteredAlerts.sort((a, b) => {
         switch (filters.sortBy) {
@@ -221,10 +219,10 @@ const Feed = () => {
             return 0;
         }
       });
-
+  
       setAlerts(filteredAlerts);
       setResultsCount(filteredAlerts.length);
-
+  
       if (filteredAlerts.length === 0) {
         setLocationMessage(`No alerts found${coords ? " for your current location" : " in Edinburgh"}`);
         setShowLocationMessage(true);
@@ -486,8 +484,9 @@ const Feed = () => {
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           {alerts.length > 0 ? (
+            // In the Card rendering section where you map through alerts
             alerts.map((alert) => (
-              <Card key={alert._id} sx={{ boxShadow: 'none', mb: 1, p: 0 }} >
+              <Card key={alert._id} sx={{ boxShadow: 'none', mb: 1, p: 0 }}>
                 <CardContent sx={{p:0}}>
                   <Typography variant="body2" component="div" sx={{ fontWeight: '600', mb: 1 }}>
                     {alert.typeLocation || alert.city} {/* Use typeLocation or city instead of location object */}
@@ -513,41 +512,38 @@ const Feed = () => {
                     </Typography>
                   </Box>
                 </CardContent>
-
-
                 <CardActions>
                   <IconButton size="small" onClick={() => handleLike(alert._id)}>
                     <Box display="flex" alignItems="center" gap={0.5}>
-                      {alert.likedBy?.includes(userId) ? (
+                      {alert.isLiked ? (
                         <ThumbUp fontSize="small" color="primary" />
                       ) : (
                         <ThumbUpOutlined fontSize="small" />
                       )}
-                      <span>{alert.likes || 0}</span>
                     </Box>
                   </IconButton>
 
                   <IconButton size="small" onClick={() => handleShare(alert._id)}>
                     <Box display="flex" alignItems="center" gap={0.5}>
-                      {alert.sharedBy?.includes(userId) ? (
-                        <i class="ri-share-2-line" style={{color:"#0000ffb3"}}></i>
+                      {alert.isShared ? (
+                        <i className="ri-share-2-line" style={{color:"#0066ffb3"}}></i>
                       ) : (
-                        <i class="ri-share-2-line"></i>
+                        <i className="ri-share-2-line"></i>
                       )}
-                      <span>{alert.shares || 0}</span>
                     </Box>
                   </IconButton>
 
                   <IconButton size="small" onClick={() => handleFlag(alert._id)}>
                     <Box display="flex" alignItems="center" gap={0.5}>
-                      {alert.flaggedBy?.includes(userId) ? (
-                        <Flag fontSize="small" color="error" />
+                      {alert.isFlagged ? (
+                        <i className="ri-flag-2-fill"></i>
                       ) : (
-                        <FlagOutlined fontSize="small" />
+                        <i className="ri-flag-2-line"></i>
                       )}
                     </Box>
                   </IconButton>
                 </CardActions>
+                
                 <Divider />
 
               </Card>

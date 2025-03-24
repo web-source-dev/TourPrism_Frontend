@@ -18,16 +18,10 @@ api.interceptors.request.use((config) => {
 export const likeAlert = async (alertId) => {
   try {
     const response = await api.post(`/alerts/${alertId}/like`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const shareAlert = async (alertId) => {
-  try {
-    const response = await api.post(`/alerts/${alertId}/share`);
-    return response.data;
+    return {
+      likes: response.data.likes,
+      liked: response.data.liked
+    };
   } catch (error) {
     throw error;
   }
@@ -36,6 +30,17 @@ export const shareAlert = async (alertId) => {
 export const flagAlert = async (alertId) => {
   try {
     const response = await api.post(`/alerts/${alertId}/flag`);
+    return {
+      flagged: response.data.flagged
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const shareAlert = async (alertId) => {
+  try {
+    const response = await api.post(`/alerts/${alertId}/share`);
     return response.data;
   } catch (error) {
     throw error;

@@ -96,6 +96,7 @@ const NotificationDrawer = ({ open, onClose, notifications, onNotificationUpdate
       PaperProps={{
         sx: {
           width: { xs: '100%', sm: 380 },
+          zIndex: 1000, // Ensure the drawer is on top of other elements
           bgcolor: 'background.default'
         }
       }}
