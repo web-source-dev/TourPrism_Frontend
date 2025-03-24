@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://tourprism-backend.onrender.com';
-// const API_URL = 'http://localhost:5000';
+// const API_URL = 'https://tourprism-backend.onrender.com';
+const API_URL = 'http://localhost:5000';
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -102,14 +102,18 @@ export const forgotPassword = async (data) => {
 };
 
 // Add this to your interceptors
+// Update the response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear localStorage and redirect to login if token is expired
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const token = localStorage.getItem('token');
+      // Only redirect if token exists (session actually expired)
+      if (token) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/session-expired';
+      }
     }
     return Promise.reject(error);
   }
@@ -325,3 +329,5 @@ export const markAllAsRead = async () => {
     throw error.response?.data || { message: 'Error marking all notifications as read' };
   }
 };
+
+export { api };

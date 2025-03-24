@@ -7,6 +7,7 @@ import { logout } from '../services/api';
 // Add these imports at the top
 import NotificationDrawer from './NotificationDrawer';
 import { getNotifications } from '../services/api';
+import { NotificationAddOutlined, NotificationsNone } from '@mui/icons-material';
 
 const Layout = ({ children, isFooter = true }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -108,7 +109,7 @@ const Layout = ({ children, isFooter = true }) => {
             onClick={handleDrawerToggle}
             sx={{ display: { sm: 'none' }, color: 'black' }}
           >
-            <i className="ri-menu-line" style={{ fontSize: '24px' }}></i>
+            <i className="ri-menu-2-line" style={{ fontSize: '24px' }}></i>
           </IconButton>
 
           <Typography
@@ -149,7 +150,7 @@ const Layout = ({ children, isFooter = true }) => {
               sx={{ color: 'black' }}
             >
               <Badge badgeContent={unreadCount} color="error">
-                <i className="ri-notification-3-line" style={{ fontSize: '24px' }}></i>
+               <NotificationsNone />
               </Badge>
             </IconButton>
           )}

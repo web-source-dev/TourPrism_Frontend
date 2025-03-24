@@ -250,7 +250,7 @@ const SignUp = () => {
         maxWidth: '400px',
         margin: '0 auto',
         padding: '1rem',
-        pt: '3rem'
+        pt: '5rem'
       }}
     >
      
@@ -258,13 +258,12 @@ const SignUp = () => {
       <form onSubmit={handleSubmit} style={{ width: '100%' }}>
         {step === 1 ? (
           <>
-
-<Typography
+  <Typography
         component="h1"
         variant="h5"
-        sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 5, fontWeight: 'bold', fontSize: '24px' }}
+        sx={{ display: 'flex', alignItems: 'center',justifyContent:"center", gap: 1, mb: 5, fontSize: '24px' }}
       >
-        <span style={{ color: '#0066FF' }}>t</span> tourprism
+        <span style={{ color: '#0066FF',fontSize:"28px" ,fontWeight:'bold'}}>t</span> tourprism
       </Typography>
             <div style={{ position: 'relative', width: '100%' }}>
               <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px', color: 'gray' }}>

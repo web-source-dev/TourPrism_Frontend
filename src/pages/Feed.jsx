@@ -117,7 +117,7 @@ const Feed = () => {
       const alert = alerts.find(a => a._id === alertId);
       if (!alert) return;
 
-      const shareText = `Safety Alert in ${alert.header || alert.typeLocation}:\n\n${alert.description} - ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://tourprism.com`;
+      const shareText = `${alert.header}:\n\n${alert.description}. ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://tourprism.com`;
 
       if (navigator.share) {
         await navigator.share({
@@ -247,7 +247,7 @@ const Feed = () => {
       setResultsCount(filteredAlerts.length);
   
       if (filteredAlerts.length === 0) {
-        setLocationMessage(`No alerts found${coords ? " for your current location" : " in Edinburgh"}`);
+        setLocationMessage(`No alerts found`);
         setShowLocationMessage(true);
       }
     } catch (error) {
@@ -262,22 +262,22 @@ const Feed = () => {
   // Replace the existing useEffect for initial load with this:
   useEffect(() => {
     const storedData = localStorage.getItem("user");
+    const storedLocation = localStorage.getItem("userLocation");
+    
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       setUserId(parsedData._id);
     }
-  }, []);
 
-  // Add a new useEffect to fetch alerts when userId is available
-  useEffect(() => {
-    if (userId) {
+    if (storedLocation) {
+      const locationData = JSON.parse(storedLocation);
+      setLocation(locationData.city);
+      setLocationCoords(locationData.coords);
+      setLocationAccuracy(locationData.accuracy);
+      fetchLocationAlerts(locationData.city, locationData.coords);
+    } else {
       fetchLocationAlerts("Edinburgh");
     }
-  }, [userId]);
-
-  // Remove the existing initial useEffect that only calls fetchLocationAlerts
-  useEffect(() => {
-    fetchLocationAlerts("Edinburgh");
   }, []);
 
   // Helper function to get device location with high accuracy
@@ -361,15 +361,20 @@ const Feed = () => {
 
   const handleLocationSuccess = async (position, highAccuracy = true) => {
     const { latitude, longitude, accuracy } = position.coords;
-    console.log("Got user location:", { latitude, longitude, accuracy });
-
-    // Create coordinates object
     const currentCoords = { latitude, longitude };
-    setLocationCoords(currentCoords);
-    setLocationAccuracy(accuracy);
 
     // Get city name from coordinates
     const cityName = await getCityFromCoordinates(latitude, longitude);
+    
+    // Save to localStorage
+    localStorage.setItem("userLocation", JSON.stringify({
+      city: cityName,
+      coords: currentCoords,
+      accuracy: accuracy
+    }));
+
+    setLocationCoords(currentCoords);
+    setLocationAccuracy(accuracy);
     setLocation(cityName);
 
     if (accuracy > 500) {
@@ -430,40 +435,64 @@ const Feed = () => {
     setVisible(prev => prev + 10)
   }
 
+  // Add this function to handle location reset
+  const handleResetLocation = () => {
+    setLocation("Edinburgh");
+    setLocationCoords(null);
+    setLocationAccuracy(null);
+    fetchLocationAlerts("Edinburgh");
+    localStorage.removeItem("userLocation");
+  };
+
+  // Modify the location section in the return statement
   return (
     <Layout isFooter={false}>
-    <Container maxWidth="md" sx={{ pb: 3 }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" component="h1" fontWeight="bold" sx={{ mb: 2 }}>
-          Feed
-        </Typography>
+      <Container maxWidth="md" sx={{ pb: 3 }}>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" component="h1" fontWeight="bold" sx={{ mb: 2 }}>
+            Feed
+          </Typography>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
-            <Typography
-              variant="body1"
-              fontWeight={500}
-              onClick={handleSelectEdinburgh}
-              sx={{ cursor: location !== "Edinburgh" ? "pointer" : "default" }}
-            >
-              {location}
-            </Typography>
-            {locationAccuracy && (
-              <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-                (±{Math.round(locationAccuracy)}m)
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
+              <Typography
+                variant="body1"
+                fontWeight={500}
+                onClick={handleSelectEdinburgh}
+                sx={{ cursor: location !== "Edinburgh" ? "pointer" : "default" }}
+              >
+                {location}
               </Typography>
+              {locationAccuracy && (
+                <>
+                  <i className="ri-circle-fill" style={{ fontSize: '6px', margin: '0 10px' }}></i>
+                  <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                    (±{Math.round(locationAccuracy)}m)
+                  </Typography>
+                </>
+              )}
+            </Box>
+            <i className="ri-circle-fill" style={{ fontSize: '6px', margin: '0 10px' }}></i>
+            {locationCoords ? (
+              <Button
+                onClick={handleResetLocation}
+                color="error"
+                sx={{ textTransform: 'none' }}
+              >
+                Reset
+              </Button>
+            ) : (
+              <Button
+                onClick={handleUseMyLocation}
+                color="#000"
+                startIcon={<MyLocationIcon color="#000" />}
+                sx={{ textTransform: 'none' }}
+              >
+                My location
+              </Button>
             )}
           </Box>
-          <Button
-            onClick={handleUseMyLocation}
-            color="#000"
-            startIcon={<MyLocationIcon color="primary" />}
-            sx={{ textTransform: 'none' }}
-          >
-            My location
-          </Button>
-        </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="body2" color="text.secondary">

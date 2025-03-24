@@ -1,23 +1,9 @@
-import axios from 'axios';
+// Remove the existing interceptor and import the api instance from api.js
+import { api } from './api';
 
-const API_URL = 'https://tourprism-backend.onrender.com/api';
-// const API_URL = 'http://localhost:5000/api';
-const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-});
-// Add token to requests if it exists
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
-  
 export const likeAlert = async (alertId) => {
   try {
-    const response = await api.post(`/alerts/${alertId}/like`);
+    const response = await api.post(`/api/alerts/${alertId}/like`);
     return {
       likes: response.data.likes,
       liked: response.data.liked
@@ -29,7 +15,7 @@ export const likeAlert = async (alertId) => {
 
 export const flagAlert = async (alertId) => {
   try {
-    const response = await api.post(`/alerts/${alertId}/flag`);
+    const response = await api.post(`/api/alerts/${alertId}/flag`);
     return {
       flagged: response.data.flagged
     };
@@ -40,7 +26,7 @@ export const flagAlert = async (alertId) => {
 
 export const shareAlert = async (alertId) => {
   try {
-    const response = await api.post(`/alerts/${alertId}/share`);
+    const response = await api.post(`/api/alerts/${alertId}/share`);
     return response.data;
   } catch (error) {
     throw error;

@@ -202,7 +202,7 @@ const FilterDrawer = ({
         <Box sx={{ display: 'flex', gap: 2 }}>
        
           <Button variant="contained" onClick={onApplyFilters} fullWidth sx={{ flex:2, backgroundColor: 'black', borderRadius:'25px', color: 'white' }}>
-            Show Results ({resultCount})
+            Show Results
           </Button>
           <Button variant="outlined" onClick={onClearFilters} fullWidth sx={{ flex:1,color: 'black', borderRadius:'25px',borderColor: 'black' }}>
             Clear All

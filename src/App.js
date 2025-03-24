@@ -10,6 +10,7 @@ import { handleGoogleCallback } from './services/api';
 import ProtectedRoute from './components/ProtectedRoute';
 import Feed from './pages/Feed';
 import BulkAlertUpload from './components/BulkAlertUpload';
+import SessionExpired from './pages/SessionExpired';
 const GoogleCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,6 +53,7 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/bulk" element={<BulkAlertUpload />} />
         </Route>
+        <Route path="/session-expired" element={<SessionExpired />} />
       </Routes>
     </Router>
   );

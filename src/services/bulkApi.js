@@ -1,28 +1,12 @@
-import axios from 'axios';
-
-const API_URL = 'https://tourprism-backend.onrender.com/api';
-// const API_URL = 'http://localhost:5000/api';
-
-const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-});
-
-// Add token to requests if it exists
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Remove the existing interceptor and import the api instance from api.js
+import { api } from './api';
 
 export const uploadBulkAlerts = async (file) => {
   try {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post('/bulk-alerts/upload', formData, {
+    const response = await api.post('/api/bulk-alerts/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -36,7 +20,7 @@ export const uploadBulkAlerts = async (file) => {
 
 export const downloadTemplate = async () => {
   try {
-    const response = await api.get('/bulk-alerts/template', {
+    const response = await api.get('/api/bulk-alerts/template', {
       responseType: 'blob',
     });
 

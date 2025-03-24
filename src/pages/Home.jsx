@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Container, Grid, Button, Divider } from '@mui/material';
 import Layout from '../components/Layout';
 import { useNavigate } from 'react-router-dom';
+import { InsertChartOutlined, NewReleasesOutlined, SettingsOutlined } from '@mui/icons-material';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ const Home = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <i className="ri-alert-line" style={{ fontSize: '24px' }}></i>
+               <NewReleasesOutlined />
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                     Emerging Threat Alerts
@@ -81,7 +82,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <i className="ri-error-warning-line" style={{ fontSize: '24px' }}></i>
+                <i className="ri-flight-takeoff-line" style={{ fontSize: '24px' }}></i>
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                     Travel Disruption Updates
@@ -94,7 +95,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <i className="ri-line-chart-line" style={{ fontSize: '24px' }}></i>
+               <InsertChartOutlined />
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                     Safety Insights
@@ -191,7 +192,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <i className="ri-plug-line" style={{ fontSize: '24px' }}></i>
+                <SettingsOutlined />
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                     Effortless Integration

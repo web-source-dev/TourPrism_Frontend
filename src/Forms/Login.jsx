@@ -229,14 +229,13 @@ const Login = () => {
         pt: '5rem',
       }}
     >
-      <Typography
+<Typography
         component="h1"
         variant="h5"
-        sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 5, fontWeight: 'bold', fontSize: '24px' }}
+        sx={{ display: 'flex', alignItems: 'center',justifyContent:"center", gap: 1, mb: 5, fontSize: '24px' }}
       >
-        <span style={{ color: '#0066FF' }}>t</span> tourprism
+        <span style={{ color: '#0066FF',fontSize:"28px" ,fontWeight:'bold'}}>t</span> tourprism
       </Typography>
-
       {redirectMessage && (
         <Alert severity="info" sx={{ mb: 2 }}>
           {redirectMessage}

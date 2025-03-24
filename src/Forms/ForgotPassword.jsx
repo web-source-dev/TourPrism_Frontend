@@ -183,13 +183,13 @@ const ForgotPassword = () => {
       <form onSubmit={step === 1 ? handleSubmitEmail : step === 2 ? handleSubmitOTP : handleSubmitPassword} style={{ width: '100%' }}>
         {step === 1 && (
           <>
-           <Typography
-           component="h1"
-           variant="h5"
-           sx={{ display: 'flex', alignItems: 'center', justifyContent:'center',gap: 1, mb: 5, fontWeight: 'bold', fontSize: '24px' }}
-         >
-           <span style={{ color: '#0066FF' }}>t</span> tourprism
-         </Typography>
+        <Typography
+        component="h1"
+        variant="h5"
+        sx={{ display: 'flex', alignItems: 'center',justifyContent:"center", gap: 1, mb: 5, fontSize: '24px' }}
+      >
+        <span style={{ color: '#0066FF',fontSize:"28px" ,fontWeight:'bold'}}>t</span> tourprism
+      </Typography>
        <div style={{ position: 'relative', width: '100%' }}>
        {/* Email Icon */}
        <span style={{
