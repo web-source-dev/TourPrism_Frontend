@@ -531,7 +531,7 @@ const Feed = () => {
                   </Typography>
 
                   <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
-                    {alert.description} - {alert.action}
+                    {alert.description}{alert.action}
                   </Typography>
 
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', color: 'text.secondary' }}>
