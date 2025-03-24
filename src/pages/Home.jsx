@@ -23,8 +23,8 @@ const Home = () => {
           textAlign: { xs: 'left', md: 'center' }
         }}>
           <Typography variant="h1" sx={{
-            fontSize: { xs: '2.5rem', md: '3.5rem' },
-            fontWeight: 'bold',
+            fontSize: { xs: '2.0rem', md: '3.5rem' },
+            fontWeight: '540',
             mb: 2
           }}>
             Personalized
@@ -61,7 +61,7 @@ const Home = () => {
         <Box sx={{ py: { xs: 4, md: 8 } }}>
           <Typography variant="h2" sx={{
             fontSize: { xs: '1.75rem', md: '2.5rem' },
-            fontWeight: 'bold',
+            fontWeight: '540',
             mb: 4
           }}>
             What You Get
@@ -71,7 +71,7 @@ const Home = () => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                <NewReleasesOutlined />
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                     Emerging Threat Alerts
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -84,7 +84,7 @@ const Home = () => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                 <i className="ri-flight-takeoff-line" style={{ fontSize: '24px' }}></i>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                     Travel Disruption Updates
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -97,7 +97,7 @@ const Home = () => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                <InsertChartOutlined />
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                     Safety Insights
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -114,7 +114,7 @@ const Home = () => {
         <Box sx={{ py: { xs: 4, md: 8 } }}>
           <Typography variant="h2" sx={{
             fontSize: { xs: '1.75rem', md: '2.5rem' },
-            fontWeight: 'bold',
+            fontWeight: '540',
             mb: 4
           }}>
             How It Works?
@@ -122,7 +122,7 @@ const Home = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <Box sx={{ px: '15px', py:1, bgcolor: 'background.paper', borderRadius: 2 ,border: '1px solid #ddd',}}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                   Step 1: Choose Your Role
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -132,7 +132,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ px: '15px', py:1, bgcolor: 'background.paper', borderRadius: 2 ,border: '1px solid #ddd',}}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                   Step 2: Set Your Preferences
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -142,7 +142,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ px: '15px', py:1, bgcolor: 'background.paper', borderRadius: 2 ,border: '1px solid #ddd',}}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                   Step 3: Start Receiving Alerts
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
@@ -158,7 +158,7 @@ const Home = () => {
         <Box sx={{ py: { xs: 4, md: 8 } }}>
           <Typography variant="h2" sx={{
             fontSize: { xs: '1.75rem', md: '2.5rem' },
-            fontWeight: 'bold',
+            fontWeight: '540',
             mb: 4
           }}>
             Why Choose Us?
@@ -168,7 +168,7 @@ const Home = () => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                 <i className="ri-focus-3-line" style={{ fontSize: '24px' }}></i>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                     Unmatched Relevance
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -181,7 +181,7 @@ const Home = () => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                 <i className="ri-shield-check-line" style={{ fontSize: '24px' }}></i>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                     Exceptional Accuracy
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -194,7 +194,7 @@ const Home = () => {
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                 <SettingsOutlined />
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: '540', mb: 1 }}>
                     Effortless Integration
                   </Typography>
                   <Typography variant="body1" color="text.secondary">

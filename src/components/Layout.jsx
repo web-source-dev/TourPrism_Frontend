@@ -213,7 +213,7 @@ const Layout = ({ children, isFooter = true }) => {
           component="footer"
           sx={{
             py: 3,
-            px: 2,
+            px: 0,
             mt: 'auto',
             bgcolor: 'white',
             borderTop: '1px solid #e0e0e0'
@@ -244,13 +244,13 @@ const Layout = ({ children, isFooter = true }) => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
-                  fontWeight: 'bold',
                   fontSize: '24px',
                   color: 'black',
                   textDecoration: 'none'
                 }}
               >
-                <span style={{ color: '#0066FF' }}>t</span> tourprism
+                <span style={{ color: '#0066FF' ,
+                  fontWeight: 'bold',fontSize:'28px'}}>t</span> tourprism
               </Typography>
               <Box sx={{ display: 'flex', gap: 2,alignItems:'center' }}>
                 <Link to="mailto:info@tourprism.com" style={{ color: 'black',textDecoration:'none' }}>
