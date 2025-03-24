@@ -23,7 +23,7 @@ const Home = () => {
           textAlign: { xs: 'left', md: 'center' }
         }}>
           <Typography variant="h1" sx={{
-            fontSize: { xs: '2.0rem', md: '3.5rem' },
+            fontSize: { xs: '24px', md: '3.5rem' },
             
             mb: 2
           }}>
@@ -32,7 +32,6 @@ const Home = () => {
             Travel Safety insights.
           </Typography>
           <Typography variant="body1" sx={{
-            fontSize: { xs: '1rem', md: '1.2rem' },
             color: 'text.secondary',
             mb: 4
           }}>
@@ -46,6 +45,8 @@ const Home = () => {
               bgcolor: 'black',
               borderRadius: 8,
               py: 1.5,
+              fontSize:'14px',
+              fontWeight: '500',
               px: 4,
               '&:hover': {
                 bgcolor: '#333'
@@ -60,7 +61,7 @@ const Home = () => {
         {/* What You Get Section */}
         <Box sx={{ py: { xs: 4, md: 8 } }}>
           <Typography variant="h2" sx={{
-            fontSize: { xs: '1.5rem', md: '2.5rem' },
+            fontSize: { xs: '20px', md: '2.5rem' },
             
             mb: 4
           }}>
@@ -113,7 +114,7 @@ const Home = () => {
         {/* How It Works Section */}
         <Box sx={{ py: { xs: 4, md: 8 } }}>
           <Typography variant="h2" sx={{
-            fontSize: { xs: '1.5rem', md: '2.5rem' },
+            fontSize: { xs: '20px', md: '2.5rem' },
             
             mb: 4
           }}>
@@ -157,7 +158,7 @@ const Home = () => {
         {/* Why Choose Us Section */}
         <Box sx={{ py: { xs: 4, md: 8 } }}>
           <Typography variant="h2" sx={{
-            fontSize: { xs: '1.5rem', md: '2.5rem' },
+            fontSize: { xs: '20px', md: '2.5rem' },
             
             mb: 4
           }}>
@@ -166,7 +167,7 @@ const Home = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <i className="ri-focus-3-line"  style={{ fontSize: '24px', marginTop:5 }}></i>
+                <i className="ri-focus-3-line"  style={{ fontSize: '24px', marginTop:1 }}></i>
                 <Box>
                   <Typography variant="h6" sx={{  mb: 1 }}>
                     Unmatched Relevance
@@ -179,7 +180,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <i className="ri-shield-check-line"  style={{ fontSize: '24px', marginTop:5 }}></i>
+                <i className="ri-shield-check-line"  style={{ fontSize: '24px', marginTop:1 }}></i>
                 <Box>
                   <Typography variant="h6" sx={{  mb: 1 }}>
                     Exceptional Accuracy
@@ -192,7 +193,7 @@ const Home = () => {
             </Grid>
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <SettingsOutlined  sx={{mt:0.5}}/>
+                <SettingsOutlined size={20}/>
                 <Box>
                   <Typography variant="h6" sx={{  mb: 1 }}>
                     Effortless Integration

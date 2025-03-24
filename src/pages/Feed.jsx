@@ -117,7 +117,7 @@ const Feed = () => {
       const alert = alerts.find(a => a._id === alertId);
       if (!alert) return;
 
-      const shareText = `${alert.header}:\n\n${alert.description}. ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://alerts.tourprism.com/`;
+      const shareText = `${alert.header}:\n\n${alert.description} ${alert.action}\n\nIncident Type: ${alert.incidentType}\n\n${alert.typeLocation} - ${formatTime(alert.createdAt)} ago\n\nPosted on TourPrism: https://alerts.tourprism.com/`;
 
       if (navigator.share) {
         await navigator.share({
@@ -449,7 +449,7 @@ const Feed = () => {
     <Layout isFooter={false}>
       <Container maxWidth="md" sx={{ pb: 3 }}>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" component="h1" fontWeight="bold" sx={{ mb: 2 }}>
+          <Typography variant="h5" fontSize={20} component="h1" sx={{ mb: 1 }}>
             Feed
           </Typography>
 
@@ -531,7 +531,7 @@ const Feed = () => {
                   </Typography>
 
                   <Typography variant="body2" color="text.primary" sx={{ mb: 1 }}>
-                    {alert.description}{alert.action}
+                    {alert.description} {alert.action}
                   </Typography>
 
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', color: 'text.secondary' }}>

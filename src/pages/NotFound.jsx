@@ -7,25 +7,24 @@ const NotFound = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '60vh',
+          minHeight: '100vh',
           textAlign: 'center',
           gap: 3
         }}
       >
-        <Typography variant="h1" sx={{ fontSize: '120px', fontWeight: 'bold', color: '#0066FF' }}>
+        <Typography variant="h1" sx={{ fontSize: '120px', fontWeight: 'bold', color: '#000' }}>
           404
         </Typography>
-        <Typography variant="h4" sx={{ mb: 2 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
           Oops! Page not found
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: '600px' }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: '350px' }}>
           The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
         </Typography>
         <Button
@@ -42,7 +41,6 @@ const NotFound = () => {
           Back to Home
         </Button>
       </Box>
-    </Layout>
   );
 };
 

@@ -78,6 +78,7 @@ const Layout = ({ children, isFooter = true }) => {
                 color: 'black',
                 textDecoration: 'none',
                 fontSize: '18px',
+                height: '35px',
                 fontWeight: 'bold',
               '&:hover': {
                 bgcolor: '#f5f5f5'
@@ -226,12 +227,12 @@ const Layout = ({ children, isFooter = true }) => {
             {/* Navigation Links */}
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 2, md: 6 }, alignItems: { xs: 'flex-start', md: 'flex-start' } }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'flex-start', md: 'flex-start' }, gap: 1 }}>
-                <Link to="/about" style={{ color: '#000', textDecoration: 'none' }}>About</Link>
-                <Link to="/post-alert" style={{ color: '#000', textDecoration: 'none' }}>Post Alert</Link>
-                <Link to="/ambassadors" style={{ color: '#000', textDecoration: 'none' }}>Ambassadors</Link>
-                <Link to="/pricing" style={{ color: '#000', textDecoration: 'none' }}>Pricing</Link>
-                <Link to="/privacy-policy" style={{ color: '#000', textDecoration: 'none' }}>Privacy Policy</Link>
-                <Link to="/terms" style={{ color: '#000', textDecoration: 'none' }}>Terms of Use</Link>
+                <Link to="/about" style={{ fontSize:'14px',color: '#000', textDecoration: 'none' }}>About</Link>
+                <Link to="/post-alert" style={{ fontSize:'14px',color: '#000', textDecoration: 'none' }}>Post Alert</Link>
+                <Link to="/ambassadors" style={{ fontSize:'14px',color: '#000', textDecoration: 'none' }}>Ambassadors</Link>
+                <Link to="/pricing" style={{ fontSize:'14px',color: '#000', textDecoration: 'none' }}>Pricing</Link>
+                <Link to="/privacy-policy" style={{ fontSize:'14px',color: '#000', textDecoration: 'none' }}>Privacy Policy</Link>
+                <Link to="/terms" style={{ fontSize:'14px',color: '#000', textDecoration: 'none' }}>Terms of Use</Link>
               </Box>
             </Box>
           </Box>
@@ -244,23 +245,23 @@ const Layout = ({ children, isFooter = true }) => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
-                  fontSize: '24px',
+                  fontSize: '18px',
                   color: 'black',
                   textDecoration: 'none'
                 }}
               >
                 <span style={{ color: '#0066FF' ,
-                  fontWeight: 'bold',fontSize:'28px'}}>t</span> tourprism
+                  fontWeight: 'bold',fontSize:'24px'}}>t</span> tourprism
               </Typography>
               <Box sx={{ display: 'flex', gap: 2,alignItems:'center' }}>
                 <Link to="mailto:info@tourprism.com" style={{ color: 'black',textDecoration:'none' }}>
-                  <i className="ri-mail-fill" style={{ fontSize: '24px' }}></i>
+                  <i className="ri-mail-fill" style={{ fontSize: '24px',color:'#666' }}></i>
                 </Link>
                 <Link to="https://linkedin.com" target="_blank" style={{ color: 'black',textDecoration:'none'  }}>
-                  <i className="ri-linkedin-box-fill" style={{ fontSize: '27px' }}></i>
+                  <i className="ri-linkedin-box-fill" style={{ fontSize: '27px',color:'#666' }}></i>
                 </Link>
-                <Link to="https://twitter.com" target="_blank" style={{ color: 'white',textDecoration:'none',backgroundColor:'#000',borderRadius:'5px',height:'22px'}}>
-                  <i className="ri-twitter-x-fill" style={{ fontSize: '20px' }}></i>
+                <Link to="https://twitter.com" target="_blank" style={{ color: 'white',textDecoration:'none',backgroundColor:'#666',borderRadius:'5px',height:'22px'}}>
+                  <i className="ri-twitter-x-fill" style={{ fontSize: '20px'}}></i>
                 </Link>
               </Box>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
