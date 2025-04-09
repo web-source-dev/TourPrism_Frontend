@@ -25,7 +25,7 @@ import {
 import FilterDrawer from "../components/FilterDrawer";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
-import { ThumbUp, ThumbUpOutlined, Share, ShareOutlined, Flag, FlagOutlined } from "@mui/icons-material";
+import { ThumbUp, ThumbUpOutlined } from "@mui/icons-material";
 import { likeAlert, shareAlert, flagAlert } from "../services/alertActions";
 import Layout from "../components/Layout";
 
